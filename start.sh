@@ -1,22 +1,17 @@
 #!/bin/bash
+# start.sh - تشغيل المشروع كاملاً
 
-echo "🚀 بدء تشغيل مشروع عقار زين..."
+echo "🚀 Starting Zain Real Estate Platform..."
 
-# تشغيل Backend في الخلفية
+# تشغيل backend
 cd backend
-php artisan serve &
-BACKEND_PID=$!
-cd ..
+echo "📡 Starting PHP backend on port 8000..."
+php artisan serve --host=0.0.0.0 --port=8000 &
 
-# تشغيل Frontend
-cd frontend
-npm run dev &
-FRONTEND_PID=$!
-cd ..
+# تشغيل frontend
+cd ../frontend
+echo "🎨 Starting React frontend on port 3000..."
+npm run dev -- --host 0.0.0.0 --port 3000 &
 
-echo "✅ Backend يعمل على: http://localhost:8000"
-echo "✅ Frontend يعمل على: http://localhost:5173"
-echo ""
-echo "لإيقاف المشروع: press Ctrl+C"
-
+echo "✅ Platform running!"
 wait
