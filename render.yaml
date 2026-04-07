@@ -1,51 +1,30 @@
 services:
   - type: web
     name: zain-backend
-    runtime: image
-    repo: https://github.com/marwanhubeg/zain-real-estate
-    branch: main
-    rootDir: backend
-    plan: free
-    dockerCommand: |
-      composer install --no-interaction --optimize-autoloader
-      cp .env.example .env
-      php artisan key:generate
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: starter # يمكنك تغيير الخطة حسب احتياجاتك (starter, standard, etc.)
+    autoDeploy: true
+    buildCommand: |
+      composer install --no-dev --optimize-autoloader && \
+      php artisan key:generate && \
       php artisan migrate --force
-      php artisan serve --host=0.0.0.0 --port=10000
+    startCommand: sh -c "php-fpm -D && nginx -g 'daemon off;'"
     envVars:
+      - key: APP_KEY
+        sync: false # يجب تعيين هذا المتغير يدوياً في Render
       - key: APP_ENV
         value: production
-      - key: APP_DEBUG
-        value: false
-      - key: APP_URL
-        value: https://zain-backend.onrender.com
-      - key: FRONTEND_URL
-        value: https://zain-real-estate.onrender.com
       - key: DB_CONNECTION
-        value: pgsql
+        value: pgsql # أو mysql إذا كنت تستخدم MySQL
       - key: DB_HOST
-        fromDatabase:
-          name: zain-db
-          property: host
+        sync: false # يجب تعيين هذا المتغير يدوياً في Render (عادةً يكون اسم خدمة قاعدة البيانات في Render)
       - key: DB_PORT
-        fromDatabase:
-          name: zain-db
-          property: port
+        value: 5432 # أو 3306 لـ MySQL
       - key: DB_DATABASE
-        fromDatabase:
-          name: zain-db
-          property: database
+        sync: false # يجب تعيين هذا المتغير يدوياً في Render
       - key: DB_USERNAME
-        fromDatabase:
-          name: zain-db
-          property: user
+        sync: false # يجب تعيين هذا المتغير يدوياً في Render
       - key: DB_PASSWORD
-        fromDatabase:
-          name: zain-db
-          property: password
-
-databases:
-  - name: zain-db
-    databaseName: zain_real_estate
-    user: zain_admin
-    plan: free
+        sync: false # يجب تعيين هذا المتغير يدوياً في Render
+      # أضف أي متغيرات بيئة أخرى تحتاجها تطبيقك هنا
